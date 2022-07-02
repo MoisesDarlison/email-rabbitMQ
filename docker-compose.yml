@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    build: ./rabbitmq
+    image: rabbitmq:3-management
+    hostname: my-rabbit
+    volumes:
+      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  consumer:
+    build: .
+    command: npm start
+    ports:
+      - "8080:3333"
+    volumes:
+      - .:/usr/app
+    depends_on:
+      - rabbitmq
+    links:
+      - rabbitmq
