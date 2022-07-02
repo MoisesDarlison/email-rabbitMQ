@@ -2,23 +2,31 @@ version: "3.8"
 
 services:
   rabbitmq:
-    build: ./rabbitmq
     image: rabbitmq:3-management
     hostname: my-rabbit
     volumes:
       - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - mail-service
     ports:
       - 5672:5672
       - 15672:15672
 
   consumer:
-    build: .
+    build: ./
     command: npm start
+    restart: on-failure
     ports:
       - "8080:3333"
     volumes:
       - .:/usr/app
     depends_on:
       - rabbitmq
+    networks:
+      - mail-service
     links:
       - rabbitmq
+
+networks:
+  mail-service:
+    driver: bridge
